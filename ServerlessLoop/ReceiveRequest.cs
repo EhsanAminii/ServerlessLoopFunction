@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
@@ -23,7 +22,13 @@ namespace ServerlessLoop
             log.LogInformation("C# HTTP trigger function processed a request.");
 
             string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
+
             var serverlessMessage = JsonConvert.DeserializeObject<ServerlessMessage>(requestBody);
+
+            if (serverlessMessage.MessageId == Guid.Empty)
+            {
+                serverlessMessage.MessageId = Guid.NewGuid();
+            }
 
             await message.AddAsync(serverlessMessage);
 
